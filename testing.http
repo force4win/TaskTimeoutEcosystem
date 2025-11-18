@@ -1,0 +1,22 @@
+### 1. Get JWT Token (LoginJWT Service)
+POST http://localhost:8080/api/auth/signin
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "admin123"
+}
+
+### 2. Access Protected Endpoint (TaskTimeout Service)
+# IMPORTANT: Replace <YOUR_JWT_TOKEN_HERE> with the accessToken obtained from request #1
+GET http://localhost:8081/api/tasktimeout/protected
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MzQ5MjgwMywiZXhwIjoxNzYzNTc5MjAzfQ.ZfTvwbLn934Ib4BTr_qYtk5isqXG6SxX04gSZrF9MNM
+
+### 3. Validate JWT Token (LoginJWT Service)
+# IMPORTANT: Replace <YOUR_JWT_TOKEN_HERE> with the accessToken obtained from request #1
+POST http://localhost:8080/api/auth/validateToken
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2MzQ5MjgwMywiZXhwIjoxNzYzNTc5MjAzfQ.ZfTvwbLn934Ib4BTr_qYtk5isqXG6SxX04gSZrF9MNM"
+}
