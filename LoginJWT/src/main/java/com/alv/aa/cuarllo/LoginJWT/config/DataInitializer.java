@@ -55,5 +55,14 @@ public class DataInitializer implements CommandLineRunner {
             User user = new User("user", passwordEncoder.encode("password"), roles);
             userRepository.save(user);
         }
+
+        // Initialize Console User
+        if (userRepository.findByUsername("consoleuser").isEmpty()) {
+            Set<Role> roles = new HashSet<>();
+            roleRepository.findByName("ROLE_USER").ifPresent(roles::add);
+
+            User consoleUser = new User("consoleuser", passwordEncoder.encode("975311"), roles);
+            userRepository.save(consoleUser);
+        }
     }
 }
