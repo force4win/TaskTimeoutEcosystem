@@ -1,70 +1,41 @@
-# Resumen del Proyecto: Integración JWT entre LoginJWT y TaskTimeout (Actualizado)
+# Resumen del Ecosistema de Aplicaciones
 
-Este documento resume el estado funcional de los proyectos `LoginJWT` y `TaskTimeout` después de una sesión de depuración y configuración.
+Este documento proporciona una visión general de los proyectos que componen este ecosistema de aplicaciones, describiendo el propósito y la tecnología de cada uno.
 
-## 1. Estado Actual (Funcional)
+## Componentes del Ecosistema
 
-Ambos servicios están correctamente configurados y la comunicación mediante JWT funciona como se esperaba.
+El ecosistema está formado por tres componentes principales que trabajan en conjunto:
 
-*   **`LoginJWT` (Servicio de Autenticación - Puerto 8080):**
-    *   Arranca correctamente.
-    *   Autentica usuarios y emite tokens JWT válidos a través de `POST /api/auth/signin`.
-    *   Utiliza una clave secreta segura y codificada en Base64 para firmar los tokens.
-    *   **Nuevo:** Se añadió un endpoint `/api/auth/validateToken` para validar tokens JWT enviándolos en el cuerpo de la solicitud.
+1.  **`LoginJWT` (Servicio de Autenticación)**
+    *   **Propósito:** Gestionar la autenticación de usuarios y la emisión de tokens de seguridad JWT (JSON Web Tokens).
+    *   **Tecnología:** Es una aplicación de backend desarrollada con **Spring Boot**.
+    *   **Funcionalidades Clave:**
+        *   Registro de nuevos usuarios.
+        *   Inicio de sesión (signin) que devuelve un token JWT si las credenciales son correctas.
+        *   Un endpoint para validar la vigencia y autenticidad de un token.
 
-*   **`TaskTimeout` (Servicio de Recursos - Puerto 8081):**
-    *   Arranca correctamente.
-    *   **Actualizado:** La validación de tokens JWT ahora se realiza mediante comunicación inter-servicios con `LoginJWT` utilizando **OpenFeign**.
-    *   **Endpoint Protegido (`GET /api/tasktimeout/protected`):** Requiere un token JWT válido en la cabecera `Authorization: Bearer <token>`.
+2.  **`TaskTimeout` (Servicio de Tareas)**
+    *   **Propósito:** Proporcionar una API REST para la gestión de tareas. Este servicio consume los tokens generados por `LoginJWT` para proteger sus endpoints.
+    *   **Tecnología:** Es una aplicación de backend desarrollada con **Spring Boot**.
+    *   **Funcionalidades Clave:**
+        *   Endpoints para crear, leer, actualizar y eliminar tareas (CRUD).
+        *   Integración con `LoginJWT` para validar los tokens de los usuarios que intentan acceder a los recursos protegidos. La comunicación entre servicios se realiza mediante **OpenFeign**.
 
-*   **Archivo de Pruebas `testing.http`:**
-    *   **Actualizado:** Contiene las peticiones necesarias para probar el flujo completo: obtener token de `LoginJWT` y acceder a los endpoints protegidos de `TaskTimeout` usando el token.
+3.  **`FrontEndAngular` (Cliente Web)**
+    *   **Propósito:** Ofrecer una interfaz de usuario web para que los usuarios interactúen con el ecosistema.
+    *   **Tecnología:** Es una aplicación de frontend desarrollada con **Angular**.
+    *   **Funcionalidades Clave:**
+        *   Formularios de registro e inicio de sesión que se comunican con `LoginJWT`.
+        *   Una vez autenticado, el cliente almacena el token JWT y lo utiliza para realizar peticiones seguras al servicio `TaskTimeout` para gestionar las tareas.
 
----
+## Flujo de Interacción
 
-## 2. Bitácora de Depuración y Soluciones Aplicadas
-
-Durante la sesión, se identificaron y resolvieron los siguientes problemas:
-
-1.  **Problema: `LoginJWT` no arrancaba (Error 401 en Login).**
-    *   **Causa:** La estructura de paquetes era incorrecta. La clase principal `LoginJwtApplication` estaba en un paquete (`com.alv.aa.cuarllo.Login.LoginJWT`) que no permitía a Spring escanear y encontrar la configuración de seguridad y los controladores (`com.alv.aa.cuarllo.LoginJWT`).
-    *   **Solución:** Se movió `LoginJwtApplication.java` al paquete correcto (`com.alv.aa.cuarllo.LoginJWT`) y se corrigió su declaración de paquete.
-
-2.  **Problema: `ClassNotFoundException` al iniciar `LoginJWT` desde la terminal.**
-    *   **Causa:** Maven tenía artefactos de compilación cacheados (`target/`) que apuntaban a la ruta antigua de la clase principal.
-    *   **Solución:** Se ejecutó `./mvnw clean` para limpiar el proyecto antes de volver a iniciarlo.
-
-3.  **Problema: `NumberFormatException` al iniciar `LoginJWT`.**
-    *   **Causa:** La propiedad `jwt.expiration` en `application.properties` tenía un comentario en la misma línea (`86400000 # 24 hours...`), lo que la convertía en una cadena de texto inválida.
-    *   **Solución:** Se eliminó el comentario de la línea.
-
-4.  **Problema: Error 401 en el endpoint público de `TaskTimeout`.**
-    *   **Causa:** La configuración de seguridad en `TaskTimeout` (`SecurityConfig.java`) permitía el acceso a `/api/public/**` en lugar de la ruta correcta del endpoint, `/api/tasktimeout/public`.
-    *   **Solución:** Se actualizó la regla `requestMatchers` para que coincidiera con la ruta correcta.
-
-5.  **Problema: Error 401 en el endpoint protegido de `TaskTimeout` (incluso con token).**
-    *   **Causa:** Ambos proyectos esperaban un `jwt.secret` codificado en **Base64**, pero el valor en `application.properties` era un texto placeholder. Esto causaba que la firma del token en `LoginJWT` y la validación en `TaskTimeout` fallaran silenciosamente.
-    *   **Solución:** Se generó una clave segura de 256 bits y se codificó en Base64. Esta nueva clave se configuró en los ficheros `application.properties` de **ambos** proyectos.
-
-6.  **Problema: `ClassNotFoundException` al iniciar `LoginJWT` desde el plugin de Spring en VS Code.**
-    *   **Causa:** El plugin de VS Code mantenía una configuración de lanzamiento cacheada que apuntaba a la ruta antigua de la clase principal.
-    *   **Solución:** Se indicó el procedimiento para limpiar el espacio de trabajo del servidor de lenguaje de Java (`Java: Clean Java Language Server Workspace`) para forzar al plugin a re-analizar el proyecto.
-
-7.  **Problema: Incompatibilidad de versiones de Spring Boot y Spring Cloud en `TaskTimeout`.**
-    *   **Causa:** La versión de Spring Boot (`3.5.7`) utilizada en `TaskTimeout` no era compatible con la versión del "Release Train" de Spring Cloud (`2023.0.0`) requerida por OpenFeign.
-    *   **Solución:** Se ajustó la versión de Spring Boot en el `pom.xml` de `TaskTimeout` a `3.2.5` para asegurar la compatibilidad.
-
----
-
-## 3. Pasos para Ejecutar y Probar
-
-1.  **Iniciar `LoginJWT`:** En su directorio, ejecuta `./mvnw clean spring-boot:run`.
-2.  **Iniciar `TaskTimeout`:** En su directorio, ejecuta `./mvnw clean spring-boot:run`.
-3.  **Usar `testing.http`:**
-    *   Ejecuta la petición #1 para obtener un token.
-    *   Copia el `accessToken` de la respuesta.
-    *   Pega el token en la cabecera `Authorization: Bearer <token>` de la petición #2.
-    *   Ejecuta la petición #2 (protegida) para verificar que la validación del token a través de OpenFeign funciona correctamente.
+1.  El usuario se registra o inicia sesión a través de la interfaz de `FrontEndAngular`.
+2.  `FrontEndAngular` envía las credenciales a `LoginJWT`.
+3.  `LoginJWT` valida las credenciales y, si son correctas, devuelve un token JWT.
+4.  `FrontEndAngular` almacena este token y lo adjunta en la cabecera `Authorization` de todas las peticiones futuras a `TaskTimeout`.
+5.  `TaskTimeout` recibe las peticiones, extrae el token y se comunica con `LoginJWT` para verificar su validez antes de permitir el acceso al recurso solicitado.
 
 
-    todo lo contestaras en español y todo analisis lo presentaras en español
+## Control general
+Siempre vas a contestar y analizar en español

@@ -9,6 +9,7 @@ Este monorepo contiene un ecosistema de dos servicios de Spring Boot que trabaja
 
 -   `./LoginJWT/`: Contiene el código fuente y la configuración del servicio de autenticación.
 -   `./TaskTimeout/`: Contiene el código fuente y la configuración del servicio de tareas.
+-   `./FrontEndAngular/`: Contiene el código fuente y la configuración del cliente web Angular.
 
 ## Cómo Ejecutar el Ecosistema
 
@@ -28,9 +29,18 @@ Para levantar ambos servicios, sigue estos pasos en terminales separadas desde e
     ```
     El servicio se ejecutará en el puerto `8081`.
 
+3.  **Iniciar el Cliente Web (`FrontEndAngular`)**
+    ```bash
+    cd FrontEndAngular
+    npm install
+    npm start
+    ```
+    El cliente web se ejecutará en el puerto `4200`.
+
 ## Documentación Específica
 
 Para obtener más detalles sobre la configuración, los endpoints y el funcionamiento de cada servicio, consulta su documentación individual:
 
 -   **[Documentación de `LoginJWT`](./LoginJWT/HELP.md)**
 -   **[Documentación de `TaskTimeout`](./TaskTimeout/README.md)**
+-   **[Documentación de `FrontEndAngular`](./FrontEndAngular/README.md)**
