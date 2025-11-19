@@ -6,7 +6,7 @@ Este documento sirve como un punto de control y contexto para reanudar el trabaj
 
 ## 1. Estado Actual del Ecosistema (Funcional)
 
-Se ha implementado el flujo completo de autenticación y consumo de datos entre los tres servicios.
+Se ha implementado el flujo completo de autenticación y **gestión de tareas (CRUD)** entre los tres servicios.
 
 *   **`LoginJWT` (Backend - Puerto 8080):**
     *   **Funcionalidad:** Autentica usuarios y emite tokens JWT.
@@ -14,58 +14,66 @@ Se ha implementado el flujo completo de autenticación y consumo de datos entre 
     *   **Datos:** Se inicializan 3 usuarios de prueba al arrancar.
 
 *   **`TaskTimeout` (Backend - Puerto 8081):**
-    *   **Funcionalidad:** Expone una API de tareas (actualmente solo lectura) protegida por JWT.
-    *   **Configuración Clave:** Se ha configurado **CORS** para permitir peticiones desde el frontend.
+    *   **Funcionalidad:** Expone una API REST para la gestión completa de tareas (CRUD), protegida por JWT.
+    *   **Configuración Clave:** Se ha configurado **CORS** para permitir peticiones desde el frontend. Los endpoints de la API se encuentran en `http://localhost:8081/tasks/`.
 
 *   **`FrontEndAngular` (Frontend - Puerto 4200/4202):**
     *   **Ubicación:** `FrontEndAngular/TaskTimeOutUi/`
     *   **Funcionalidad:**
-        *   Un formulario de login que se comunica con `LoginJWT`.
-        *   Una vista de "tareas" que se muestra tras un login exitoso.
-        *   La vista de tareas obtiene y muestra datos del endpoint protegido de `TaskTimeout`.
+        *   Un formulario de login funcional que redirige a la página de tareas.
+        *   Una vista de "tareas" que permite **Crear, Leer, Actualizar y Eliminar (CRUD)** tareas.
+        *   La vista de tareas se comunica con el endpoint protegido de `TaskTimeout`.
+        *   Muestra mensajes de feedback (éxito/error) al usuario.
+        *   La UI se actualiza correctamente en un entorno **zoneless**.
     *   **Estructura y Lógica:**
-        *   Se han creado servicios (`AuthService`, `TaskService`), componentes (`Login`, `Tasks`), un `AuthGuard` para proteger rutas y un `AuthInterceptor` para adjuntar el token JWT a las peticiones.
-        *   Se ha implementado tipado estricto para los modelos de autenticación (`LoginCredentials`, `JwtResponse`).
+        *   Servicios (`AuthService`, `TaskService`), componentes (`Login`, `Tasks`), `AuthGuard` y `AuthInterceptor` están implementados.
+        *   Se ha implementado tipado estricto para los modelos (`LoginCredentials`, `JwtResponse`, `Task`, `TaskRequest`).
 
 ---
 
-## 2. Archivos y Rutas Clave
+## 2. Cambios Realizados (Sesión Reciente)
+
+*   **Implementación de CRUD en Frontend:** Se añadió la funcionalidad completa para Crear, Leer, Actualizar y Eliminar tareas en el componente de Tareas.
+*   **Corrección de Flujo de Login:** Se solucionó un problema que impedía la redirección después del login. El error se debía a una discrepancia entre el `JwtResponse` del backend (`accessToken`) y el modelo del frontend (`token`).
+*   **Corrección de Detección de Cambios (Zoneless):** Se solucionó un problema por el cual la UI no se actualizaba tras recibir datos. Se inyectó `ChangeDetectorRef` en el componente de Tareas para disparar manualmente la detección de cambios.
+*   **Mejoras en la Interfaz:** Se limpió el `app.html` principal, se mejoró el estilo del componente de tareas y se añadieron mensajes de feedback para el usuario.
+*   **Gestión del Token JWT:** Se implementó la lógica para que el `TaskService` envíe el token JWT en las cabeceras de las peticiones.
+
+---
+
+## 3. Notas de Desarrollo y Deuda Técnica
+
+*   **Endpoint de Tareas en Backend:** El `TaskController.java` en el backend `TaskTimeout` está mapeado a `/tasks`, pero el frontend está configurado para llamar a `/api/tasktimeout/tasks`. **Esto genera un 404**. Para que la aplicación funcione, se debe corregir el `@RequestMapping` en `TaskController.java` a `@RequestMapping("/api/tasktimeout/tasks")`.
+*   **Interceptor vs. Headers Manuales:** El frontend tiene un `AuthInterceptor` que debería añadir el token JWT a todas las peticiones. Sin embargo, para cumplir con una solicitud explícita, se modificó el `TaskService` para añadir las cabeceras de autorización manualmente. Esto es redundante y se considera deuda técnica. El enfoque correcto sería confiar en el interceptor y asegurar que la configuración del backend (CORS, mapping) es correcta.
+
+---
+
+## 4. Archivos y Rutas Clave
 
 *   **Configuración de Seguridad y CORS:**
     *   `LoginJWT/src/main/java/com/alv/aa/cuarllo/LoginJWT/config/SecurityConfig.java`
     *   `TaskTimeout/src/main/java/com/alv/aa/cuarllo/TaskTimeout/config/SecurityConfig.java`
-
-*   **Datos de Prueba (Backend):**
-    *   `LoginJWT/src/main/java/com/alv/aa/cuarllo/LoginJWT/config/DataInitializer.java`
-
-*   **Lógica Principal (Frontend):**
-    *   Servicios: `FrontEndAngular/TaskTimeOutUi/src/app/services/`
-    *   Componentes: `FrontEndAngular/TaskTimeOutUi/src/app/components/`
-    *   Modelos de datos: `FrontEndAngular/TaskTimeOutUi/src/app/models/`
-    *   Configuración de rutas: `FrontEndAngular/TaskTimeOutUi/src/app/app.routes.ts`
-    *   Configuración de la app (providers, interceptors): `FrontEndAngular/TaskTimeOutUi/src/app/app.config.ts`
+*   **Controlador de Tareas (Backend):**
+    *   `TaskTimeout/src/main/java/com/alv/aa/cuarllo/TaskTimeout/controller/TaskController.java`
+*   **Servicios y Componentes (Frontend):**
+    *   `FrontEndAngular/TaskTimeOutUi/src/app/services/`
+    *   `FrontEndAngular/TaskTimeOutUi/src/app/components/`
+    *   `FrontEndAngular/TaskTimeOutUi/src/app/interceptors/`
+    *   `FrontEndAngular/TaskTimeOutUi/src/app/app.config.ts`
 
 ---
 
-## 3. Datos Relevantes y Credenciales
+## 5. Datos Relevantes y Credenciales
 
-*   **Puertos:**
-    *   `LoginJWT`: `8080`
-    *   `TaskTimeout`: `8081`
-    *   `FrontEndAngular`: `4200` (o `4202` si el puerto está ocupado)
-
+*   **Puertos:** `LoginJWT: 8080`, `TaskTimeout: 8081`, `FrontEndAngular: 4200`
 *   **Endpoints API:**
     *   Login: `POST http://localhost:8080/api/auth/signin`
-    *   Obtener Tareas: `GET http://localhost:8081/api/tasktimeout/tasks`
-
-*   **Credenciales de Prueba:**
-    *   `admin` / `admin123`
-    *   `user` / `password`
-    *   `consoleuser` / `975311`
+    *   Tareas (CRUD): `http://localhost:8081/api/tasktimeout/tasks`
+*   **Credenciales de Prueba:** `admin/admin123`, `user/password`, `consoleuser/975311`
 
 ---
 
-## 4. Instrucciones de Ejecución
+## 6. Instrucciones de Ejecución
 
 1.  **Iniciar Backend `LoginJWT`:** `cd LoginJWT && ./mvnw spring-boot:run`
 2.  **Iniciar Backend `TaskTimeout`:** `cd TaskTimeout && ./mvnw spring-boot:run`
@@ -73,21 +81,9 @@ Se ha implementado el flujo completo de autenticación y consumo de datos entre 
 
 ---
 
-## 5. Control General (Instrucciones de Trabajo)
+## 7. Tareas Pendientes / Próximos Pasos
 
-*   **Idioma:** Siempre contestar y analizar en **español**.
-*   **Git:** Antes de ejecutar un comando `git` (como `add`, `commit`, `push`), debo **notificarte** y esperar tu instrucción. El entorno actual no tiene `git` en el PATH.
-*   **Convenciones de Código (Angular):**
-    *   El proyecto `FrontEndAngular` tiene una estructura no estándar para los componentes (ej. `app.ts`, `app.html` en lugar de `app.component.ts`). Debo seguir este patrón al crear o modificar archivos.
-    *   Priorizar el tipado estricto sobre el uso de `any`.
-
----
-
-## 6. Tareas Pendientes / Próximos Pasos
-
-*   **Frontend:**
-    *   Crear un modelo de datos (`interface Task`) para tipar las tareas que vienen del backend.
-    *   Implementar la funcionalidad de Crear, Actualizar y Eliminar tareas.
-    *   Mejorar la interfaz de usuario: limpiar el `app.html` principal, añadir un menú de navegación y proporcionar feedback más claro al usuario (ej. mensajes de error/éxito).
-*   **Backend:**
-    *   Implementar los endpoints correspondientes para Crear, Actualizar y Eliminar tareas en `TaskTimeout`.
+*   **Backend:** Corregir el `RequestMapping` del `TaskController.java` para que coincida con las llamadas de la API del frontend.
+*   **Frontend:** Refactorizar `TaskService` para eliminar la adición manual de headers de autorización y depender únicamente del `AuthInterceptor`.
+*   **Frontend:** Añadir un menú de navegación global.
+*   **Frontend:** Implementar un sistema de notificaciones más robusto (ej. usando un servicio de "toast").

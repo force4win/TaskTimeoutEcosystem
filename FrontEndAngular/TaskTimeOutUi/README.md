@@ -8,6 +8,18 @@ El propósito de esta aplicación es ofrecer una experiencia de usuario fluida p
 1.  Autenticarse en el sistema a través del servicio `LoginJWT`.
 2.  Gestionar (ver, crear, editar, eliminar) tareas a través del servicio `TaskTimeout`.
 
+## Funcionalidades
+
+- **Autenticación de Usuarios:** Formulario de login que valida las credenciales contra el servicio `LoginJWT`.
+- **Navegación Protegida:** Las rutas de la aplicación están protegidas, y solo los usuarios autenticados pueden acceder a la página de tareas.
+- **Gestión de Tareas (CRUD):**
+    - **Listar Tareas:** Muestra una lista de todas las tareas existentes.
+    - **Crear Tareas:** Permite a los usuarios crear nuevas tareas a través de un formulario.
+    - **Actualizar Tareas:** Permite editar tareas existentes directamente en el mismo formulario.
+    - **Eliminar Tareas:** Permite eliminar tareas con una confirmación.
+- **Feedback al Usuario:** Muestra mensajes de éxito y error para las operaciones de gestión de tareas.
+- **Soporte Zoneless:** La aplicación está configurada para funcionar en modo "zoneless", gestionando manualmente la detección de cambios para un rendimiento óptimo.
+
 ## Cómo Empezar
 
 ### Prerrequisitos

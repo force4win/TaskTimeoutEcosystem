@@ -28,8 +28,8 @@ El proyecto incluye `springdoc-openapi` para generar documentación de la API de
 
 Una vez que la aplicación esté en ejecución, puedes acceder a la interfaz de usuario de Swagger para ver todos los endpoints, probarlos directamente desde el navegador e inspeccionar los modelos de datos.
 
-- **URL de Swagger UI:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
-- **URL de la especificación OpenAPI (JSON):** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
+- **URL de Swagger UI:** [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html)
+- **URL de la especificación OpenAPI (JSON):** [http://localhost:8081/v3/api-docs](http://localhost:8081/v3/api-docs)
 
 ## Cómo Empezar
 
@@ -50,23 +50,25 @@ Sigue estos pasos para levantar y ejecutar la aplicación en tu entorno local.
    ./mvnw spring-boot:run
    ```
 
-La API estará disponible en `http://localhost:8080`.
+La API estará disponible en `http://localhost:8081`.
 
 ## Endpoints de la API
 
 A continuación se detallan los endpoints disponibles y cómo interactuar con ellos.
+
+**Nota:** Aunque los endpoints están mapeados a rutas como `/tasks`, el cliente de frontend está configurado para llamar a `/api/tasktimeout/tasks`. Para que la comunicación funcione, se debe ajustar el `RequestMapping` en el controlador correspondiente.
 
 ### 1. Obtener todas las tareas
 
 Recupera una lista de todas las tareas almacenadas en la base de datos, ordenadas por fecha de vencimiento y con campos calculados.
 
 - **Método:** `GET`
-- **URL:** `/tasks`
+- **URL:** `/api/tasktimeout/tasks`
 
 **Ejemplo con cURL:**
 
 ```bash
-curl http://localhost:8080/tasks
+curl http://localhost:8081/api/tasktimeout/tasks
 ```
 
 **Respuesta de Ejemplo:**
@@ -97,12 +99,12 @@ curl http://localhost:8080/tasks
 Recupera una lista de todas las tareas tal como están en la base de datos, sin campos calculados. Es útil para ver los datos originales que se pueden editar.
 
 - **Método:** `GET`
-- **URL:** `/tasks/raw`
+- **URL:** `/api/tasktimeout/tasks/raw`
 
 **Ejemplo con cURL:**
 
 ```bash
-curl http://localhost:8080/tasks/raw
+curl http://localhost:8081/api/tasktimeout/tasks/raw
 ```
 
 ### 3. Crear una nueva tarea
@@ -110,7 +112,7 @@ curl http://localhost:8080/tasks/raw
 Registra una nueva tarea. Puedes proporcionar la fecha de vencimiento directamente (`dueDate`) o calcularla a partir de los días hasta el vencimiento (`daysToDueDate`).
 
 - **Método:** `POST`
-- **URL:** `/tasks`
+- **URL:** `/api/tasktimeout/tasks`
 - **Body (JSON):**
 
   ```json
@@ -124,7 +126,7 @@ Registra una nueva tarea. Puedes proporcionar la fecha de vencimiento directamen
 **Ejemplo con cURL:**
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d "{\"description\":\"Mi nueva tarea\", \"startDate\":\"2025-11-10\", \"daysToDueDate\": 15}" http://localhost:8080/tasks
+curl -X POST -H "Content-Type: application/json" -d "{\"description\":\"Mi nueva tarea\", \"startDate\":\"2025-11-10\", \"daysToDueDate\": 15}" http://localhost:8081/api/tasktimeout/tasks
 ```
 
 ### 3. Actualizar una tarea existente
@@ -132,12 +134,12 @@ curl -X POST -H "Content-Type: application/json" -d "{\"description\":\"Mi nueva
 Modifica los datos de una tarea existente identificada por su `id`.
 
 - **Método:** `PUT`
-- **URL:** `/tasks/{id}`
+- **URL:** `/api/tasktimeout/tasks/{id}`
 
 **Ejemplo con cURL (actualizando la tarea con ID 1):**
 
 ```bash
-curl -X PUT -H "Content-Type: application/json" -d "{\"description\":\"Descripción actualizada\", \"startDate\":\"2025-11-05\", \"dueDate\":\"2025-11-25\"}" http://localhost:8080/tasks/1
+curl -X PUT -H "Content-Type: application/json" -d "{\"description\":\"Descripción actualizada\", \"startDate\":\"2025-11-05\", \"dueDate\":\"2025-11-25\"}" http://localhost:8081/api/tasktimeout/tasks/1
 ```
 
 ### 4. Eliminar una tarea
@@ -145,12 +147,12 @@ curl -X PUT -H "Content-Type: application/json" -d "{\"description\":\"Descripci
 Elimina una tarea de la base de datos por su `id`.
 
 - **Método:** `DELETE`
-- **URL:** `/tasks/{id}`
+- **URL:** `/api/tasktimeout/tasks/{id}`
 
 **Ejemplo con cURL (eliminando la tarea con ID 2):**
 
 ```bash
-curl -X DELETE http://localhost:8080/tasks/2
+curl -X DELETE http://localhost:8081/api/tasktimeout/tasks/2
 ```
 
 Si la operación es exitosa, la API devolverá un código de estado `204 No Content`.
