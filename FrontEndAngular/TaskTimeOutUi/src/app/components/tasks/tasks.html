@@ -4,22 +4,65 @@
     <button (click)="logout()">Logout</button>
   </div>
 
+  <!-- Feedback Messages -->
+  <div *ngIf="successMessage" class="feedback-message success">
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="feedback-message error">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Task Creation/Edit Form -->
+  <div class="task-form-container">
+    <h3>{{ editingTask ? 'Edit Task' : 'Create New Task' }}</h3>
+    <form [formGroup]="taskForm" (ngSubmit)="createOrUpdateTask()">
+      <div class="form-group">
+        <label for="description">Description:</label>
+        <input id="description" type="text" formControlName="description" placeholder="Task description">
+        <div *ngIf="taskForm.get('description')?.invalid && taskForm.get('description')?.touched" class="error-message">
+          Description is required.
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="startDate">Start Date:</label>
+        <input id="startDate" type="date" formControlName="startDate">
+        <div *ngIf="taskForm.get('startDate')?.invalid && taskForm.get('startDate')?.touched" class="error-message">
+          Start Date is required.
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="dueDate">Due Date:</label>
+        <input id="dueDate" type="date" formControlName="dueDate">
+        <div *ngIf="taskForm.get('dueDate')?.invalid && taskForm.get('dueDate')?.touched" class="error-message">
+          Due Date is required.
+        </div>
+      </div>
+      <button type="submit" [disabled]="taskForm.invalid">{{ editingTask ? 'Update Task' : 'Add Task' }}</button>
+      <button type="button" *ngIf="editingTask" (click)="cancelEdit()" class="cancel-button">Cancel Edit</button>
+    </form>
+  </div>
+  <p>Lista de tareas</p>
   <div *ngIf="tasks.length > 0; else noTasks">
     <table>
       <thead>
         <tr>
           <th>ID</th>
           <th>Description</th>
-          <th>Status</th>
+          <th>Start Date</th>
           <th>Due Date</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let task of tasks">
           <td>{{ task.id }}</td>
           <td>{{ task.description }}</td>
-          <td>{{ task.status }}</td>
-          <td>{{ task.dueDate | date: 'short' }}</td>
+          <td>{{ task.startDate | date: 'shortDate' }}</td>
+          <td>{{ task.dueDate | date: 'shortDate' }}</td>
+          <td>
+            <button (click)="editTask(task)" class="edit-button">Edit</button>
+            <button (click)="deleteTask(task.id)" class="delete-button">Delete</button>
+          </td>
         </tr>
       </tbody>
     </table>

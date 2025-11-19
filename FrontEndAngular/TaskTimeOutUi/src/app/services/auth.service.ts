@@ -13,8 +13,8 @@ export class AuthService {
   login(credentials: LoginCredentials): Observable<JwtResponse> {
     return this.http.post<JwtResponse>(`${this.apiUrl}/signin`, credentials).pipe(
       tap((response: JwtResponse) => {
-        if (response && response.token) {
-          localStorage.setItem('jwt_token', response.token);
+        if (response && response.accessToken) { // Changed from response.token
+          localStorage.setItem('jwt_token', response.accessToken); // Changed from response.token
         }
       })
     );

@@ -4,10 +4,9 @@ export interface LoginCredentials {
 }
 
 export interface JwtResponse {
-  token: string;
+  accessToken: string; // Changed from 'token'
   type: string;
   id: number;
   username: string;
-  email: string;
   roles: string[];
 }
