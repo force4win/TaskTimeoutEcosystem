@@ -1,41 +1,93 @@
-# Resumen del Ecosistema de Aplicaciones
+# Resumen del Ecosistema y Estado del Proyecto
 
-Este documento proporciona una visión general de los proyectos que componen este ecosistema de aplicaciones, describiendo el propósito y la tecnología de cada uno.
+Este documento sirve como un punto de control y contexto para reanudar el trabajo. Contiene el estado actual de los proyectos, decisiones de diseño, datos clave y un registro de las instrucciones de trabajo.
 
-## Componentes del Ecosistema
+---
 
-El ecosistema está formado por tres componentes principales que trabajan en conjunto:
+## 1. Estado Actual del Ecosistema (Funcional)
 
-1.  **`LoginJWT` (Servicio de Autenticación)**
-    *   **Propósito:** Gestionar la autenticación de usuarios y la emisión de tokens de seguridad JWT (JSON Web Tokens).
-    *   **Tecnología:** Es una aplicación de backend desarrollada con **Spring Boot**.
-    *   **Funcionalidades Clave:**
-        *   Registro de nuevos usuarios.
-        *   Inicio de sesión (signin) que devuelve un token JWT si las credenciales son correctas.
-        *   Un endpoint para validar la vigencia y autenticidad de un token.
+Se ha implementado el flujo completo de autenticación y consumo de datos entre los tres servicios.
 
-2.  **`TaskTimeout` (Servicio de Tareas)**
-    *   **Propósito:** Proporcionar una API REST para la gestión de tareas. Este servicio consume los tokens generados por `LoginJWT` para proteger sus endpoints.
-    *   **Tecnología:** Es una aplicación de backend desarrollada con **Spring Boot**.
-    *   **Funcionalidades Clave:**
-        *   Endpoints para crear, leer, actualizar y eliminar tareas (CRUD).
-        *   Integración con `LoginJWT` para validar los tokens de los usuarios que intentan acceder a los recursos protegidos. La comunicación entre servicios se realiza mediante **OpenFeign**.
+*   **`LoginJWT` (Backend - Puerto 8080):**
+    *   **Funcionalidad:** Autentica usuarios y emite tokens JWT.
+    *   **Configuración Clave:** Se ha configurado **CORS** para permitir peticiones desde el frontend de Angular (`localhost:4200`, `localhost:4202`).
+    *   **Datos:** Se inicializan 3 usuarios de prueba al arrancar.
 
-3.  **`FrontEndAngular` (Cliente Web)**
-    *   **Propósito:** Ofrecer una interfaz de usuario web para que los usuarios interactúen con el ecosistema.
-    *   **Tecnología:** Es una aplicación de frontend desarrollada con **Angular**.
-    *   **Funcionalidades Clave:**
-        *   Formularios de registro e inicio de sesión que se comunican con `LoginJWT`.
-        *   Una vez autenticado, el cliente almacena el token JWT y lo utiliza para realizar peticiones seguras al servicio `TaskTimeout` para gestionar las tareas.
+*   **`TaskTimeout` (Backend - Puerto 8081):**
+    *   **Funcionalidad:** Expone una API de tareas (actualmente solo lectura) protegida por JWT.
+    *   **Configuración Clave:** Se ha configurado **CORS** para permitir peticiones desde el frontend.
 
-## Flujo de Interacción
+*   **`FrontEndAngular` (Frontend - Puerto 4200/4202):**
+    *   **Ubicación:** `FrontEndAngular/TaskTimeOutUi/`
+    *   **Funcionalidad:**
+        *   Un formulario de login que se comunica con `LoginJWT`.
+        *   Una vista de "tareas" que se muestra tras un login exitoso.
+        *   La vista de tareas obtiene y muestra datos del endpoint protegido de `TaskTimeout`.
+    *   **Estructura y Lógica:**
+        *   Se han creado servicios (`AuthService`, `TaskService`), componentes (`Login`, `Tasks`), un `AuthGuard` para proteger rutas y un `AuthInterceptor` para adjuntar el token JWT a las peticiones.
+        *   Se ha implementado tipado estricto para los modelos de autenticación (`LoginCredentials`, `JwtResponse`).
 
-1.  El usuario se registra o inicia sesión a través de la interfaz de `FrontEndAngular`.
-2.  `FrontEndAngular` envía las credenciales a `LoginJWT`.
-3.  `LoginJWT` valida las credenciales y, si son correctas, devuelve un token JWT.
-4.  `FrontEndAngular` almacena este token y lo adjunta en la cabecera `Authorization` de todas las peticiones futuras a `TaskTimeout`.
-5.  `TaskTimeout` recibe las peticiones, extrae el token y se comunica con `LoginJWT` para verificar su validez antes de permitir el acceso al recurso solicitado.
+---
 
+## 2. Archivos y Rutas Clave
 
-## Control general
-Siempre vas a contestar y analizar en español
+*   **Configuración de Seguridad y CORS:**
+    *   `LoginJWT/src/main/java/com/alv/aa/cuarllo/LoginJWT/config/SecurityConfig.java`
+    *   `TaskTimeout/src/main/java/com/alv/aa/cuarllo/TaskTimeout/config/SecurityConfig.java`
+
+*   **Datos de Prueba (Backend):**
+    *   `LoginJWT/src/main/java/com/alv/aa/cuarllo/LoginJWT/config/DataInitializer.java`
+
+*   **Lógica Principal (Frontend):**
+    *   Servicios: `FrontEndAngular/TaskTimeOutUi/src/app/services/`
+    *   Componentes: `FrontEndAngular/TaskTimeOutUi/src/app/components/`
+    *   Modelos de datos: `FrontEndAngular/TaskTimeOutUi/src/app/models/`
+    *   Configuración de rutas: `FrontEndAngular/TaskTimeOutUi/src/app/app.routes.ts`
+    *   Configuración de la app (providers, interceptors): `FrontEndAngular/TaskTimeOutUi/src/app/app.config.ts`
+
+---
+
+## 3. Datos Relevantes y Credenciales
+
+*   **Puertos:**
+    *   `LoginJWT`: `8080`
+    *   `TaskTimeout`: `8081`
+    *   `FrontEndAngular`: `4200` (o `4202` si el puerto está ocupado)
+
+*   **Endpoints API:**
+    *   Login: `POST http://localhost:8080/api/auth/signin`
+    *   Obtener Tareas: `GET http://localhost:8081/api/tasktimeout/tasks`
+
+*   **Credenciales de Prueba:**
+    *   `admin` / `admin123`
+    *   `user` / `password`
+    *   `consoleuser` / `975311`
+
+---
+
+## 4. Instrucciones de Ejecución
+
+1.  **Iniciar Backend `LoginJWT`:** `cd LoginJWT && ./mvnw spring-boot:run`
+2.  **Iniciar Backend `TaskTimeout`:** `cd TaskTimeout && ./mvnw spring-boot:run`
+3.  **Iniciar Frontend Angular:** `cd FrontEndAngular/TaskTimeOutUi && npm install && npm start`
+
+---
+
+## 5. Control General (Instrucciones de Trabajo)
+
+*   **Idioma:** Siempre contestar y analizar en **español**.
+*   **Git:** Antes de ejecutar un comando `git` (como `add`, `commit`, `push`), debo **notificarte** y esperar tu instrucción. El entorno actual no tiene `git` en el PATH.
+*   **Convenciones de Código (Angular):**
+    *   El proyecto `FrontEndAngular` tiene una estructura no estándar para los componentes (ej. `app.ts`, `app.html` en lugar de `app.component.ts`). Debo seguir este patrón al crear o modificar archivos.
+    *   Priorizar el tipado estricto sobre el uso de `any`.
+
+---
+
+## 6. Tareas Pendientes / Próximos Pasos
+
+*   **Frontend:**
+    *   Crear un modelo de datos (`interface Task`) para tipar las tareas que vienen del backend.
+    *   Implementar la funcionalidad de Crear, Actualizar y Eliminar tareas.
+    *   Mejorar la interfaz de usuario: limpiar el `app.html` principal, añadir un menú de navegación y proporcionar feedback más claro al usuario (ej. mensajes de error/éxito).
+*   **Backend:**
+    *   Implementar los endpoints correspondientes para Crear, Actualizar y Eliminar tareas en `TaskTimeout`.

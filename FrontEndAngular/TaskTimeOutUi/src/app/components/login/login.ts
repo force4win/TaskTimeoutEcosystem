@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { LoginCredentials } from '../../models/auth.models';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,7 @@ export class Login {
   router = inject(Router);
 
   login(): void {
-    const credentials = { username: this.username, password: this.password };
+    const credentials: LoginCredentials = { username: this.username, password: this.password };
     this.authService.login(credentials).subscribe({
       next: () => {
         this.router.navigate(['/tasks']);

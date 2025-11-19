@@ -1,59 +1,43 @@
-# TaskTimeOutUi
+# Cliente Web Angular para el Ecosistema TaskTimeout
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.10.
+Este proyecto es el cliente web oficial para el ecosistema de servicios `TaskTimeout` y `LoginJWT`. Ha sido desarrollado con **Angular** y se comunica con los backends para proporcionar una interfaz de usuario interactiva.
 
-## Development server
+## Propósito
 
-To start a local development server, run:
+El propósito de esta aplicación es ofrecer una experiencia de usuario fluida para:
+1.  Autenticarse en el sistema a través del servicio `LoginJWT`.
+2.  Gestionar (ver, crear, editar, eliminar) tareas a través del servicio `TaskTimeout`.
 
-```bash
-ng serve
-```
+## Cómo Empezar
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### Prerrequisitos
 
-## Code scaffolding
+Antes de ejecutar esta aplicación, asegúrate de que los siguientes servicios de backend estén en funcionamiento:
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+*   **`LoginJWT`**: Corriendo en `http://localhost:8080`
+*   **`TaskTimeout`**: Corriendo en `http://localhost:8081`
 
-```bash
-ng generate component component-name
-```
+Consulta el `README.md` principal del monorepo para obtener instrucciones sobre cómo iniciar los servicios de backend.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Instalación y Ejecución
 
-```bash
-ng generate --help
-```
+1.  **Navega al directorio del proyecto:**
+    ```bash
+    cd FrontEndAngular/TaskTimeOutUi
+    ```
 
-## Building
+2.  **Instala las dependencias:**
+    ```bash
+    npm install
+    ```
 
-To build the project run:
+3.  **Inicia el servidor de desarrollo:**
+    ```bash
+    npm start
+    ```
+    o
+    ```bash
+    ng serve
+    ```
 
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Una vez iniciado, abre tu navegador y ve a `http://localhost:4200/`. La aplicación se recargará automáticamente si realizas cambios en los archivos fuente.
