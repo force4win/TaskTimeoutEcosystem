@@ -58,12 +58,12 @@ export class TasksChartComponent implements OnInit {
       );
 
       return {
-        labels: ['Remaining', 'Elapsed'],
+        labels: ['Elapsed', 'Remaining'],
         datasets: [
           {
-            data: [remaining, elapsed],
-            backgroundColor: ['#FF0000', '#E0E0E0'], // Red for remaining, Gray for elapsed
-            hoverBackgroundColor: ['#FF0000', '#E0E0E0'],
+            data: [elapsed, remaining],
+            backgroundColor: ['#E0E0E0', '#FF0000'], // Gray for elapsed, Red for remaining
+            hoverBackgroundColor: ['#E0E0E0', '#FF0000'],
             borderWidth: 0,
           },
         ],
