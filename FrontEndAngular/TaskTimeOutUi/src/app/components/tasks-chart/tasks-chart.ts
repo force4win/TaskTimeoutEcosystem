@@ -17,18 +17,10 @@ export class TasksChartComponent implements OnInit, OnDestroy {
   tasks: Task[] = [];
   chartData: ChartData<'doughnut'>[] = [];
   public doughnutCutout: string = '60%';
-  public doughnutChartOptions: ChartConfiguration<'doughnut'>['options'] = {
-    responsive: true,
-    cutout: this.doughnutCutout,
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-  };
+  public displayMode: 'percentage' | 'days' = 'days'; // Nueva configuración
+  public doughnutChartOptions: ChartConfiguration<'doughnut'>['options'];
   public doughnutChartType: 'doughnut' = 'doughnut';
 
-  // Plugin para dibujar texto en el centro de la dona
   public textCenterPlugin = {
     id: 'textCenter',
     afterDraw(chart: any) {
@@ -38,6 +30,9 @@ export class TasksChartComponent implements OnInit, OnDestroy {
         const centerX = (chartArea.left + chartArea.right) / 2;
         const centerY = (chartArea.top + chartArea.bottom) / 2;
 
+        const options = chart.options.plugins.textCenter || {};
+        const displayMode = options.displayMode || 'percentage';
+
         const data = chart.data.datasets[0].data;
         if (data && data.length > 1) {
           const elapsed = data[0];
@@ -46,8 +41,14 @@ export class TasksChartComponent implements OnInit, OnDestroy {
 
           if (total === 0) return;
 
-          const percentage = ((remaining / total) * 100).toFixed(0);
-          const text = `${percentage}%`;
+          let text: string;
+          if (displayMode === 'days') {
+            const remainingDays = (remaining / (1000 * 60 * 60 * 24)).toFixed(0);
+            text = `${remainingDays}d`;
+          } else {
+            const percentage = ((remaining / total) * 100).toFixed(0);
+            text = `${percentage}%`;
+          }
 
           ctx.save();
           const fontHeight = 30;
@@ -66,7 +67,20 @@ export class TasksChartComponent implements OnInit, OnDestroy {
     private taskService: TaskService,
     private cdr: ChangeDetectorRef,
     private router: Router
-  ) {}
+  ) {
+    this.doughnutChartOptions = {
+      responsive: true,
+      cutout: this.doughnutCutout,
+      plugins: {
+        legend: {
+          display: false,
+        },
+        textCenter: {
+          displayMode: this.displayMode,
+        },
+      },
+    };
+  }
 
   ngOnInit(): void {
     Chart.register(this.textCenterPlugin);
