@@ -1,0 +1,21 @@
+<div class="chart-container">
+  <div class="header">
+    <h2>Task Time Distribution</h2>
+    <button (click)="goBack()">Go Back to Tasks</button>
+  </div>
+  <div class="charts-grid" *ngIf="tasks.length > 0; else noTasks">
+    <div *ngFor="let task of tasks; let i = index" class="chart-item">
+      <h3>{{ task.description }}</h3>
+      <canvas
+        baseChart
+        [data]="chartData[i]"
+        [type]="doughnutChartType"
+        [options]="doughnutChartOptions"
+      >
+      </canvas>
+    </div>
+  </div>
+  <ng-template #noTasks>
+    <p>No tasks available to display in chart.</p>
+  </ng-template>
+</div>
