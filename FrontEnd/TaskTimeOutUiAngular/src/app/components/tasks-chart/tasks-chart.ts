@@ -16,8 +16,8 @@ import { Router } from '@angular/router';
 export class TasksChartComponent implements OnInit, OnDestroy {
   tasks: Task[] = [];
   chartData: ChartData<'doughnut'>[] = [];
-  public doughnutCutout: string = '60%';
-  public displayMode: 'percentage' | 'days' = 'days'; // Nueva configuración
+  public doughnutCutout: string = '90%';
+  public displayMode: 'percentage' | 'days' = 'days';
   public doughnutChartOptions: ChartConfiguration<'doughnut'>['options'];
   public doughnutChartType: 'doughnut' = 'doughnut';
 
@@ -78,6 +78,16 @@ export class TasksChartComponent implements OnInit, OnDestroy {
         textCenter: {
           displayMode: this.displayMode,
         },
+        tooltip: {
+          callbacks: {
+            label: (context: any) => {
+              const label = context.label || '';
+              const value = context.parsed;
+              const formattedValue = this.formatMilliseconds(value);
+              return `${label}: ${formattedValue}`;
+            },
+          },
+        },
       },
     };
   }
@@ -89,6 +99,26 @@ export class TasksChartComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     Chart.unregister(this.textCenterPlugin);
+  }
+
+  formatMilliseconds(ms: number): string {
+    if (ms < 0) ms = 0;
+    const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+
+    let result = '';
+    if (days > 0) {
+      result += `${days}d `;
+    }
+    if (hours > 0) {
+      result += `${hours}h `;
+    }
+    if (minutes > 0 && days === 0) {
+      result += `${minutes}m`;
+    }
+
+    return result.trim() || '0m';
   }
 
   loadTasks(): void {

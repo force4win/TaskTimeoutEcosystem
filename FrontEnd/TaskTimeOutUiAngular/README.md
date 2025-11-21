@@ -17,6 +17,7 @@ El propósito de esta aplicación es ofrecer una experiencia de usuario fluida p
     - **Crear Tareas:** Permite a los usuarios crear nuevas tareas a través de un formulario.
     - **Actualizar Tareas:** Permite editar tareas existentes directamente en el mismo formulario.
     - **Eliminar Tareas:** Permite eliminar tareas con una confirmación.
+- **Visualización de Gráficos de Tareas:** Presenta una vista de gráficos de dona (`doughnut chart`) para cada tarea, mostrando visualmente el tiempo transcurrido frente al tiempo restante.
 - **Feedback al Usuario:** Muestra mensajes de éxito y error para las operaciones de gestión de tareas.
 - **Soporte Zoneless:** La aplicación está configurada para funcionar en modo "zoneless", gestionando manualmente la detección de cambios para un rendimiento óptimo.
 
@@ -45,7 +46,7 @@ Consulta el `README.md` principal del monorepo para obtener instrucciones sobre 
 
 3.  **Inicia el servidor de desarrollo:**
     ```bash
-    npm start
+    ng serve
     ```
     o
     ```bash
