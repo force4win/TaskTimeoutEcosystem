@@ -27,12 +27,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
+                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())) // Permitir iframes para H2
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) ->
                                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.anyRequest().authenticated()
+                        auth.requestMatchers("/h2-console/**").permitAll() // Permitir acceso a la consola H2
+                                .anyRequest().authenticated()
                 );
 
         http.addFilterBefore(alvAuthFilter, UsernamePasswordAuthenticationFilter.class);

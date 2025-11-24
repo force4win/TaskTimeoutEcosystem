@@ -1,70 +1,52 @@
-# Getting Started with Create React App
+# Cliente Web React para el Ecosistema TaskTimeout
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Este proyecto es una implementación en **React** del cliente web para el ecosistema de servicios `TaskTimeout` y `LoginJWT`. Replica la funcionalidad de la aplicación original de Angular y se comunica con los mismos backends para proporcionar una interfaz de usuario interactiva.
 
-## Available Scripts
+## Propósito
 
-In the project directory, you can run:
+El propósito de esta aplicación es ofrecer una experiencia de usuario fluida para:
+1.  Autenticarse en el sistema a través del servicio `LoginJWT`.
+2.  Gestionar (ver, crear, editar, eliminar) tareas a través del servicio `TaskTimeout`.
+3.  Visualizar el estado de las tareas de forma gráfica.
 
-### `npm start`
+## Funcionalidades
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Autenticación de Usuarios:** Formulario de login que valida las credenciales contra el servicio `LoginJWT`, gestionando el estado global con React Context.
+- **Navegación Protegida:** Las rutas de la aplicación están protegidas, y solo los usuarios autenticados pueden acceder a las páginas de tareas y gráficos.
+- **Gestión de Tareas (CRUD):**
+    - **Listar Tareas:** Muestra una lista de todas las tareas existentes.
+    - **Crear Tareas:** Permite a los usuarios crear nuevas tareas a través de un formulario.
+    - **Actualizar Tareas:** Permite editar tareas existentes.
+    - **Eliminar Tareas:** Permite eliminar tareas con una confirmación.
+- **Visualización de Gráficos de Tareas:** Presenta una vista de gráficos de dona (`doughnut chart`) para cada tarea, mostrando visualmente el tiempo transcurrido frente al tiempo restante.
+- **Feedback al Usuario:** Muestra mensajes de éxito y error para las operaciones de gestión de tareas.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Cómo Empezar
 
-### `npm test`
+### Prerrequisitos
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Antes de ejecutar esta aplicación, asegúrate de que los siguientes servicios de backend estén en funcionamiento:
 
-### `npm run build`
+*   **`LoginJWT`**: Corriendo en `http://localhost:8080`
+*   **`TaskTimeout`**: Corriendo en `http://localhost:8081`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Consulta el `README.md` principal del monorepo para obtener instrucciones sobre cómo iniciar los servicios de backend.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Instalación y Ejecución
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1.  **Navega al directorio del proyecto:**
+    ```bash
+    cd FrontEnd/TaskTimeOutUiReact
+    ```
 
-### `npm run eject`
+2.  **Instala las dependencias:**
+    ```bash
+    npm install
+    ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+3.  **Inicia el servidor de desarrollo:**
+    ```bash
+    npm start
+    ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Una vez iniciado, abre tu navegador y ve a `http://localhost:3000/`. La aplicación se recargará automáticamente si realizas cambios en los archivos fuente.
