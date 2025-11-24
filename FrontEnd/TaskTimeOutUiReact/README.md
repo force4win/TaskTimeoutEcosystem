@@ -1,52 +1,64 @@
-# Cliente Web React para el Ecosistema TaskTimeout
+# TaskTimeout React UI
 
-Este proyecto es una implementación en **React** del cliente web para el ecosistema de servicios `TaskTimeout` y `LoginJWT`. Replica la funcionalidad de la aplicación original de Angular y se comunica con los mismos backends para proporcionar una interfaz de usuario interactiva.
+This project is the React web client for the TaskTimeout ecosystem. It was developed to replicate the functionality of the original Angular client, providing a rich user interface to interact with the `LoginJWT` and `TaskTimeout` backend services.
 
-## Propósito
+## 1. Core Features
 
-El propósito de esta aplicación es ofrecer una experiencia de usuario fluida para:
-1.  Autenticarse en el sistema a través del servicio `LoginJWT`.
-2.  Gestionar (ver, crear, editar, eliminar) tareas a través del servicio `TaskTimeout`.
-3.  Visualizar el estado de las tareas de forma gráfica.
+-   **User Authentication:** A login form that authenticates users against the `LoginJWT` service.
+-   **Global State Management:** Uses **React Context** (`AuthContext`) to manage and provide global access to the user's authentication state and JWT.
+-   **Protected Routes:** Implements a `PrivateRoute` component to protect application routes, redirecting unauthenticated users to the login page.
+-   **API Service Layer:** Uses **Axios** in dedicated service files (`authService.js`, `taskService.js`) to handle all communication with the backend, automatically attaching the JWT to protected requests.
+-   **Task Management (CRUD):**
+    -   **List Tasks:** Displays a list of all existing tasks.
+    -   **Create & Update:** Provides a form to create new tasks or edit existing ones.
+    -   **Delete Tasks:** Allows for the deletion of tasks.
+-   **Task Visualization:** Includes a `TasksChart` component that renders doughnut charts for each task, visually representing the time elapsed vs. time remaining.
+-   **User Feedback:** Shows success and error messages for all CRUD operations.
 
-## Funcionalidades
+---
 
-- **Autenticación de Usuarios:** Formulario de login que valida las credenciales contra el servicio `LoginJWT`, gestionando el estado global con React Context.
-- **Navegación Protegida:** Las rutas de la aplicación están protegidas, y solo los usuarios autenticados pueden acceder a las páginas de tareas y gráficos.
-- **Gestión de Tareas (CRUD):**
-    - **Listar Tareas:** Muestra una lista de todas las tareas existentes.
-    - **Crear Tareas:** Permite a los usuarios crear nuevas tareas a través de un formulario.
-    - **Actualizar Tareas:** Permite editar tareas existentes.
-    - **Eliminar Tareas:** Permite eliminar tareas con una confirmación.
-- **Visualización de Gráficos de Tareas:** Presenta una vista de gráficos de dona (`doughnut chart`) para cada tarea, mostrando visualmente el tiempo transcurrido frente al tiempo restante.
-- **Feedback al Usuario:** Muestra mensajes de éxito y error para las operaciones de gestión de tareas.
+## 2. Technologies Used
 
-## Cómo Empezar
+-   **React 18**
+-   **JavaScript (ES6+)**
+-   **CSS Modules** for component-level styling.
+-   **React Router (`react-router-dom`):** For all client-side routing.
+-   **React Context:** For global state management (authentication).
+-   **Axios:** As the HTTP client for making API requests.
+-   **Chart.js** with the `react-chartjs-2` wrapper for data visualization.
 
-### Prerrequisitos
+---
 
-Antes de ejecutar esta aplicación, asegúrate de que los siguientes servicios de backend estén en funcionamiento:
+## 3. How to Run
 
-*   **`LoginJWT`**: Corriendo en `http://localhost:8080`
-*   **`TaskTimeout`**: Corriendo en `http://localhost:8081`
+### 3.1. Prerequisites
 
-Consulta el `README.md` principal del monorepo para obtener instrucciones sobre cómo iniciar los servicios de backend.
+Ensure the backend services are running before starting the client:
+-   **`LoginJWT`** on `http://localhost:8080`
+-   **`TaskTimeout`** on `http://localhost:8081`
 
-### Instalación y Ejecución
+### 3.2. Installation and Execution
 
-1.  **Navega al directorio del proyecto:**
+1.  Navigate to the project's directory:
     ```bash
     cd FrontEnd/TaskTimeOutUiReact
     ```
-
-2.  **Instala las dependencias:**
+2.  Install the required `npm` dependencies:
     ```bash
     npm install
     ```
-
-3.  **Inicia el servidor de desarrollo:**
+3.  Start the development server:
     ```bash
     npm start
     ```
+4.  Open your browser and navigate to **`http://localhost:3000`**.
 
-Una vez iniciado, abre tu navegador y ve a `http://localhost:3000/`. La aplicación se recargará automáticamente si realizas cambios en los archivos fuente.
+---
+
+## 4. Project Structure
+
+-   `src/components`: Contains all major UI components (`Login.js`, `Tasks.js`, `TasksChart.js`).
+-   `src/services`: Contains the `authService.js` and `taskService.js` for communicating with the backend APIs.
+-   `src/contexts`: Includes the `AuthContext.js` for global state management.
+-   `src/routes`: Includes the `PrivateRoute.js` component for route protection.
+-   `public`: Contains the base `index.html` and other static assets.

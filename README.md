@@ -56,3 +56,10 @@ Para obtener más detalles sobre la configuración, los endpoints y el funcionam
 -   **[Documentación de `TaskTimeout`](./TaskTimeout/README.md)**
 -   **[Documentación de `FrontEndAngular`](./FrontEndAngular/TaskTimeOutUi/README.md)**
 -   **[Documentación de `FrontEndReact`](./FrontEnd/TaskTimeOutUiReact/README.md)**
+
+## Documentación API
+
+Para acceder a las interfaces de Swagger UI de los servicios, una vez que estén en ejecución, visita:
+
+-   **`LoginJWT`:** [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+-   **`TaskTimeout`:** [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html)

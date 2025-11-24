@@ -25,4 +25,4 @@ Content-Type: application/json
 ### 4 . getAllTasks (TaskTimeout Service)
 # IMPORTANT: Replace <YOUR_JWT_TOKEN_HERE> with the accessToken obtained from request #1
 GET http://localhost:8081/api/tasktimeout/tasks
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjb25zb2xldXNlciIsImlhdCI6MTc2MzU2MDYwNywiZXhwIjoxNzYzNjQ3MDA3fQ.omsMyOI51NjnrQZdE9Ba-nQ21dF6BhtQC85ooIPDtJo
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzk5NzU4NywiZXhwIjoxNzY0MDgzOTg3fQ.rEaywv7OQ-VxqN7IVJUxVjg6oOSlZ_lZTDyK6jJW0CI

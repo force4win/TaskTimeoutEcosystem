@@ -1,56 +1,62 @@
-# Cliente Web Angular para el Ecosistema TaskTimeout
+# TaskTimeout Angular UI
 
-Este proyecto es el cliente web oficial para el ecosistema de servicios `TaskTimeout` y `LoginJWT`. Ha sido desarrollado con **Angular** y se comunica con los backends para proporcionar una interfaz de usuario interactiva.
+This project is the Angular web client for the TaskTimeout ecosystem. It provides a rich user interface to interact with the `LoginJWT` and `TaskTimeout` backend services.
 
-## Propósito
+## 1. Core Features
 
-El propósito de esta aplicación es ofrecer una experiencia de usuario fluida para:
-1.  Autenticarse en el sistema a través del servicio `LoginJWT`.
-2.  Gestionar (ver, crear, editar, eliminar) tareas a través del servicio `TaskTimeout`.
+-   **User Authentication:** A login form that authenticates users against the `LoginJWT` service and stores the received JWT in local storage.
+-   **Protected Routes:** Implements an `AuthGuard` to protect application routes, redirecting unauthenticated users to the login page.
+-   **JWT Interceptor:** An `AuthInterceptor` automatically attaches the JWT to the headers of all outgoing HTTP requests to the `TaskTimeout` service.
+-   **Task Management (CRUD):**
+    -   **List Tasks:** Displays a list of all existing tasks.
+    -   **Create & Update:** Provides a form to create new tasks or edit existing ones.
+    -   **Delete Tasks:** Allows for the deletion of tasks.
+-   **Task Visualization:** Includes a `TasksChartComponent` that renders doughnut charts for each task, visually representing the time elapsed vs. time remaining.
+-   **User Feedback:** Shows success and error messages for all CRUD operations.
 
-## Funcionalidades
+---
 
-- **Autenticación de Usuarios:** Formulario de login que valida las credenciales contra el servicio `LoginJWT`.
-- **Navegación Protegida:** Las rutas de la aplicación están protegidas, y solo los usuarios autenticados pueden acceder a la página de tareas.
-- **Gestión de Tareas (CRUD):**
-    - **Listar Tareas:** Muestra una lista de todas las tareas existentes.
-    - **Crear Tareas:** Permite a los usuarios crear nuevas tareas a través de un formulario.
-    - **Actualizar Tareas:** Permite editar tareas existentes directamente en el mismo formulario.
-    - **Eliminar Tareas:** Permite eliminar tareas con una confirmación.
-- **Visualización de Gráficos de Tareas:** Presenta una vista de gráficos de dona (`doughnut chart`) para cada tarea, mostrando visualmente el tiempo transcurrido frente al tiempo restante.
-- **Feedback al Usuario:** Muestra mensajes de éxito y error para las operaciones de gestión de tareas.
-- **Soporte Zoneless:** La aplicación está configurada para funcionar en modo "zoneless", gestionando manualmente la detección de cambios para un rendimiento óptimo.
+## 2. Technologies Used
 
-## Cómo Empezar
+-   **Angular 17**
+-   **TypeScript**
+-   **SCSS** for styling.
+-   **Chart.js** with the `ng2-charts` library for data visualization.
+-   **Angular Standalone Components:** The application is built using Angular's modern standalone component architecture.
+-   **Zoneless Change Detection:** Configured to run in a "zoneless" mode for optimized performance, with manual change detection where necessary.
 
-### Prerrequisitos
+---
 
-Antes de ejecutar esta aplicación, asegúrate de que los siguientes servicios de backend estén en funcionamiento:
+## 3. How to Run
 
-*   **`LoginJWT`**: Corriendo en `http://localhost:8080`
-*   **`TaskTimeout`**: Corriendo en `http://localhost:8081`
+### 3.1. Prerequisites
 
-Consulta el `README.md` principal del monorepo para obtener instrucciones sobre cómo iniciar los servicios de backend.
+Ensure the backend services are running before starting the client:
+-   **`LoginJWT`** on `http://localhost:8080`
+-   **`TaskTimeout`** on `http://localhost:8081`
 
-### Instalación y Ejecución
+### 3.2. Installation and Execution
 
-1.  **Navega al directorio del proyecto:**
+1.  Navigate to the project's directory:
     ```bash
-    cd FrontEndAngular/TaskTimeOutUi
+    cd FrontEnd/TaskTimeOutUiAngular
     ```
-
-2.  **Instala las dependencias:**
+2.  Install the required `npm` dependencies:
     ```bash
     npm install
     ```
-
-3.  **Inicia el servidor de desarrollo:**
+3.  Start the development server:
     ```bash
-    ng serve
+    npm start
     ```
-    o
-    ```bash
-    ng serve
-    ```
+4.  Open your browser and navigate to **`http://localhost:4200`**.
 
-Una vez iniciado, abre tu navegador y ve a `http://localhost:4200/`. La aplicación se recargará automáticamente si realizas cambios en los archivos fuente.
+---
+
+## 4. Project Structure
+
+-   `src/app/components`: Contains all major UI components (`Login`, `Tasks`, `TasksChart`).
+-   `src/app/services`: Contains the `AuthService` and `TaskService` for communicating with the backend APIs.
+-   `src/app/guards`: Includes the `AuthGuard` for route protection.
+-   `src/app/interceptors`: Includes the `AuthInterceptor` for attaching JWTs.
+-   `src/app/models`: Contains TypeScript interfaces for data models (`Task`, `JwtResponse`, etc.).

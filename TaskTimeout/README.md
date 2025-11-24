@@ -1,158 +1,69 @@
-# TaskTimeout API
+# TaskTimeout Service
 
-TaskTimeout es una API RESTful construida con Spring Boot que permite a los usuarios gestionar un dashboard de tareas con fechas de vencimiento.
+This service is the resource hub for the TaskTimeout ecosystem. It is a Spring Boot application responsible for managing tasks (CRUD operations). Access to its endpoints is protected and requires a valid JSON Web Token (JWT).
 
-## Descripción
+## 1. Core Responsibilities
 
-La idea central del proyecto es soportar un sistema de tareas donde cada tarea tiene una fecha de inicio y una fecha de vencimiento. La API calcula y devuelve dinámicamente los días que han pasado desde el inicio de la tarea y los días que faltan para su vencimiento.
+-   **Task Management:** Provides a full CRUD (Create, Read, Update, Delete) API for managing user tasks.
+-   **Data Calculation:** Dynamically calculates and provides computed fields for tasks, such as the total duration and remaining days.
+-   **Endpoint Protection:** Secures its endpoints, requiring a valid JWT in the `Authorization` header for access.
 
-La base de datos se inicializa con datos de ejemplo cada vez que se inicia la aplicación para facilitar las pruebas.
+## 2. Architectural Design: Delegated Authentication
 
-## Características
+A key architectural feature of this service is its handling of authentication. Instead of validating JWTs locally, it **delegates** the validation to the `LoginJWT` service.
 
-- **Crear Tareas:** Registra nuevas tareas con descripción, fecha de inicio y fecha de vencimiento (o días hasta el vencimiento).
-- **Consultar Tareas:** Obtiene una lista de todas las tareas con información calculada sobre su estado.
-- **Actualizar Tareas:** Modifica los detalles de una tarea existente.
-- **Eliminar Tareas:** Borra una tarea de la base de datos.
+-   It uses a custom security filter (`AlvAuthFilter`) to intercept incoming requests and extract the JWT.
+-   It then uses a **Spring Cloud Feign client** (`AuthClient`) to make a REST API call to `LoginJWT`'s `/api/auth/validateToken` endpoint.
+-   Access is granted only if `LoginJWT` confirms the token's validity.
 
-## Tecnologías Utilizadas
+---
 
-- Java 17
-- Spring Boot 3
-- Maven
-- H2 Database (Base de datos en memoria)
+## 3. Technologies Used
 
-## Documentación de la API (Swagger)
+-   **Java 17**
+-   **Spring Boot 3.2.5**
+-   **Spring Security:** For handling endpoint protection and the security filter chain.
+-   **Spring Cloud OpenFeign:** For declarative REST API communication with the `LoginJWT` service.
+-   **Spring Data JPA:** For database interactions.
+-   **H2 Database Engine:** An in-memory database for storing task information.
+-   **SpringDoc OpenAPI (Swagger):** For automatic API documentation.
 
-El proyecto incluye `springdoc-openapi` para generar documentación de la API de forma automática a través de la especificación OpenAPI 3.0.
+---
 
-Una vez que la aplicación esté en ejecución, puedes acceder a la interfaz de usuario de Swagger para ver todos los endpoints, probarlos directamente desde el navegador e inspeccionar los modelos de datos.
+## 4. How to Run
 
-- **URL de Swagger UI:** [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html)
-- **URL de la especificación OpenAPI (JSON):** [http://localhost:8081/v3/api-docs](http://localhost:8081/v3/api-docs)
+1.  Navigate to the project's root directory:
+    ```bash
+    cd TaskTimeout
+    ```
+2.  Use the Maven wrapper to start the application:
+    ```bash
+    ./mvnw spring-boot:run
+    ```
+3.  The service will start on port **8081**.
 
-## Cómo Empezar
+---
 
-Sigue estos pasos para levantar y ejecutar la aplicación en tu entorno local.
+## 5. Key Endpoints
 
-### Prerrequisitos
+The API is exposed under the base path `/api/tasktimeout`.
 
-- Tener instalado Java 17 (o superior).
-- Tener Maven instalado (o puedes usar el Maven Wrapper incluido).
+### 5.1. Task API
 
-### Ejecución
+-   `GET /api/tasktimeout/tasks`: Retrieves a list of all tasks with calculated fields.
+-   `POST /api/tasktimeout/tasks`: Creates a new task.
+-   `PUT /api/tasktimeout/tasks/{id}`: Updates an existing task.
+-   `DELETE /api/tasktimeout/tasks/{id}`: Deletes a task.
 
-1. Clona este repositorio en tu máquina local.
-2. Abre una terminal en el directorio raíz del proyecto.
-3. Ejecuta el siguiente comando para iniciar la aplicación:
+### 5.2. API Documentation
 
-   ```bash
-   ./mvnw spring-boot:run
-   ```
+-   **Swagger UI:** Once the application is running, the interactive API documentation is available at:
+    [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html)
 
-La API estará disponible en `http://localhost:8081`.
+### 5.3. Database Console
 
-## Endpoints de la API
-
-A continuación se detallan los endpoints disponibles y cómo interactuar con ellos.
-
-**Nota:** Aunque los endpoints están mapeados a rutas como `/tasks`, el cliente de frontend está configurado para llamar a `/api/tasktimeout/tasks`. Para que la comunicación funcione, se debe ajustar el `RequestMapping` en el controlador correspondiente.
-
-### 1. Obtener todas las tareas
-
-Recupera una lista de todas las tareas almacenadas en la base de datos, ordenadas por fecha de vencimiento y con campos calculados.
-
-- **Método:** `GET`
-- **URL:** `/api/tasktimeout/tasks`
-
-**Ejemplo con cURL:**
-
-```bash
-curl http://localhost:8081/api/tasktimeout/tasks
-```
-
-**Respuesta de Ejemplo:**
-
-```json
-[
-    {
-        "id": 2,
-        "description": "Crear el modelo de datos de la base de datos",
-        "startDate": "2025-10-23",
-        "dueDate": "2025-11-02",
-        "totalTaskDays": 10,
-        "daysRemainingForDueDate": -5
-    },
-    {
-        "id": 1,
-        "description": "Configurar el entorno de desarrollo",
-        "startDate": "2025-11-05",
-        "dueDate": "2025-11-17",
-        "totalTaskDays": 12,
-        "daysRemainingForDueDate": 10
-    }
-]
-```
-
-### 2. Obtener todas las tareas (sin procesar)
-
-Recupera una lista de todas las tareas tal como están en la base de datos, sin campos calculados. Es útil para ver los datos originales que se pueden editar.
-
-- **Método:** `GET`
-- **URL:** `/api/tasktimeout/tasks/raw`
-
-**Ejemplo con cURL:**
-
-```bash
-curl http://localhost:8081/api/tasktimeout/tasks/raw
-```
-
-### 3. Crear una nueva tarea
-
-Registra una nueva tarea. Puedes proporcionar la fecha de vencimiento directamente (`dueDate`) o calcularla a partir de los días hasta el vencimiento (`daysToDueDate`).
-
-- **Método:** `POST`
-- **URL:** `/api/tasktimeout/tasks`
-- **Body (JSON):**
-
-  ```json
-  {
-    "description": "Mi nueva tarea",
-    "startDate": "2025-11-10",
-    "daysToDueDate": 15
-  }
-  ```
-
-**Ejemplo con cURL:**
-
-```bash
-curl -X POST -H "Content-Type: application/json" -d "{\"description\":\"Mi nueva tarea\", \"startDate\":\"2025-11-10\", \"daysToDueDate\": 15}" http://localhost:8081/api/tasktimeout/tasks
-```
-
-### 3. Actualizar una tarea existente
-
-Modifica los datos de una tarea existente identificada por su `id`.
-
-- **Método:** `PUT`
-- **URL:** `/api/tasktimeout/tasks/{id}`
-
-**Ejemplo con cURL (actualizando la tarea con ID 1):**
-
-```bash
-curl -X PUT -H "Content-Type: application/json" -d "{\"description\":\"Descripción actualizada\", \"startDate\":\"2025-11-05\", \"dueDate\":\"2025-11-25\"}" http://localhost:8081/api/tasktimeout/tasks/1
-```
-
-### 4. Eliminar una tarea
-
-Elimina una tarea de la base de datos por su `id`.
-
-- **Método:** `DELETE`
-- **URL:** `/api/tasktimeout/tasks/{id}`
-
-**Ejemplo con cURL (eliminando la tarea con ID 2):**
-
-```bash
-curl -X DELETE http://localhost:8081/api/tasktimeout/tasks/2
-```
-
-Si la operación es exitosa, la API devolverá un código de estado `204 No Content`.
+-   **H2 Console:** The in-memory database can be accessed for inspection at:
+    [http://localhost:8081/h2-console](http://localhost:8081/h2-console)
+    -   **JDBC URL:** `jdbc:h2:mem:testdb`
+    -   **Username:** `sa`
+    -   **Password:** (leave blank)

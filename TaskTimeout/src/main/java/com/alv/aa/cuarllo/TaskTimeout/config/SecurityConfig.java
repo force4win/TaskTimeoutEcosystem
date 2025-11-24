@@ -33,7 +33,10 @@ public class SecurityConfig {
                                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/h2-console/**").permitAll() // Permitir acceso a la consola H2
+                        auth.requestMatchers("/h2-console/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**").permitAll() // Permitir acceso a la consola H2 y Swagger UI
                                 .anyRequest().authenticated()
                 );
 
