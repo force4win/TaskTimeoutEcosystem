@@ -76,7 +76,29 @@ Se ha implementado el flujo completo de autenticación y **gestión de tareas (C
 
 ---
 
-## 5. Cambios Realizados (Sesión Antigua)
+## 5. Infraestructura de Base de Datos con Docker
+
+Se ha configurado un entorno de base de datos persistente utilizando Docker y MySQL, que reemplaza la configuración en memoria de H2 para los servicios de backend.
+
+*   **Ubicación:** `Containers/mysql/`
+*   **Propósito:**
+    *   Proporcionar persistencia de datos para que no se pierdan al reiniciar las aplicaciones.
+    *   Simular un entorno de producción más realista.
+    *   Aislar la base de datos en su propio contenedor.
+*   **Componentes:**
+    *   **`docker-compose.yml`:** Define el servicio `mysql-db` con la imagen `mysql:8.0`, mapea el puerto `3306` y gestiona un volumen (`mysql_data`) para la persistencia.
+    *   **`init.sql`:** Script que se ejecuta al iniciar el contenedor por primera vez para crear las bases de datos necesarias: `loginjwt_db` y `tasktimeout_db`.
+*   **Configuración de los Servicios Backend:**
+    *   Se han modificado los archivos `pom.xml` de `LoginJWT` y `TaskTimeout` para reemplazar la dependencia de H2 por `mysql-connector-j`.
+    *   Los archivos `application.properties` de ambos servicios han sido actualizados para apuntar a la base de datos MySQL correspondiente (ej. `jdbc:mysql://localhost:3306/loginjwt_db`).
+*   **Uso:**
+    1.  Navegar a `Containers/mysql`.
+    2.  Ejecutar `docker-compose up -d` para iniciar la base de datos.
+    3.  Iniciar los servicios de Spring Boot, que se conectarán automáticamente a la base de datos MySQL.
+
+---
+
+## 6. Cambios Realizados (Sesión Antigua)
 
 *   **Implementación de CRUD en Frontend:** Se añadió la funcionalidad completa para Crear, Leer, Actualizar y Eliminar tareas en el componente de Tareas.
 *   **Corrección de Flujo de Login:** Se solucionó un problema que impedía la redirección después del login. El error se debía a una discrepancia entre el `JwtResponse` del backend (`accessToken`) y el modelo del frontend (`token`).
@@ -86,14 +108,14 @@ Se ha implementado el flujo completo de autenticación y **gestión de tareas (C
 
 ---
 
-## 6. Notas de Desarrollo y Deuda Técnica
+## 7. Notas de Desarrollo y Deuda Técnica
 
 *   **Endpoint de Tareas en Backend:** El `TaskController.java` en el backend `TaskTimeout` está mapeado a `/tasks`, pero el frontend está configurado para llamar a `/api/tasktimeout/tasks`. **Esto genera un 404**. Para que la aplicación funcione, se debe corregir el `@RequestMapping` en `TaskController.java` a `@RequestMapping("/api/tasktimeout/tasks")`.
 *   **Interceptor vs. Headers Manuales:** El frontend tiene un `AuthInterceptor` que debería añadir el token JWT a todas las peticiones. Sin embargo, para cumplir con una solicitud explícita, se modificó el `TaskService` para añadir las cabeceras de autorización manualmente. Esto es redundante y se considera deuda técnica. El enfoque correcto sería confiar en el interceptor y asegurar que la configuración del backend (CORS, mapping) es correcta.
 
 ---
 
-## 7. Archivos y Rutas Clave
+## 8. Archivos y Rutas Clave
 
 *   **Configuración de Seguridad y CORS:**
     *   `LoginJWT/src/main/java/com/alv/aa/cuarllo/LoginJWT/config/SecurityConfig.java`
@@ -108,7 +130,7 @@ Se ha implementado el flujo completo de autenticación y **gestión de tareas (C
 
 ---
 
-## 8. Datos Relevantes y Credenciales
+## 9. Datos Relevantes y Credenciales
 
 *   **Puertos:** `LoginJWT: 8080`, `TaskTimeout: 8081`, `FrontEndAngular: 4200`, `FrontEndReact: 3000`
 *   **Endpoints API:**
@@ -118,18 +140,16 @@ Se ha implementado el flujo completo de autenticación y **gestión de tareas (C
 
 ---
 
-## 9. Instrucciones de Ejecución
+## 10. Instrucciones de Ejecución
 
 1.  **Iniciar Backend `LoginJWT`:** `cd LoginJWT && ./mvnw spring-boot:run`
 2.  **Iniciar Backend `TaskTimeout`:** `cd TaskTimeout && ./mvnw spring-boot:run`
-3.  **Iniciar Frontend Angular:** `cd FrontEndAngular/TaskTimeOutUi && npm install && npm start`
-4.  **Iniciar Frontend React:** `cd FrontEnd/TaskTimeOutUiReact && npm install && npm start`
+3.  **Iniciar Contenedor MySQL:** `cd Containers/mysql && docker-compose up -d`
+4.  **Iniciar Frontend Angular:** `cd FrontEndAngular/TaskTimeOutUi && npm install && npm start`
+5.  **Iniciar Frontend React:** `cd FrontEnd/TaskTimeOutUiReact && npm install && npm start`
 
 ---
 
-## 10. Tareas Pendientes / Próximos Pasos
-
-*   **Backend:** Corregir el `RequestMapping` del `TaskController.java` para que coincida con las llamadas de la API del frontend.
-*   **Frontend:** Refactorizar `TaskService` para eliminar la adición manual de headers de autorización y depender únicamente del `AuthInterceptor`.
+## 11. Tareas Pendientes / Próximos Pasos
 *   **Frontend:** Añadir un menú de navegación global.
 *   **Frontend:** Implementar un sistema de notificaciones más robusto (ej. usando un servicio de "toast").
